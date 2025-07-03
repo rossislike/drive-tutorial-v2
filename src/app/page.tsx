@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
+import { useState } from "react";
+import Link from "next/link";
 import {
   ChevronRight,
   File,
@@ -19,189 +19,95 @@ import {
   Trash,
   Upload,
   Users,
-} from "lucide-react"
+} from "lucide-react";
 
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
-import { Button } from "~/components/ui/button"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "~/components/ui/dialog"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "~/components/ui/dropdown-menu"
-import { Input } from "~/components/ui/input"
-import { ScrollArea } from "~/components/ui/scroll-area"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
+import { Button } from "~/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "~/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "~/components/ui/dropdown-menu";
+import { Input } from "~/components/ui/input";
+import { ScrollArea } from "~/components/ui/scroll-area";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import { mockData, type DriveItem } from "~/lib/mock-data";
 
 // Mock data for files and folders
-const mockData = {
-  root: {
-    name: "My Drive",
-    type: "folder",
-    children: ["documents", "images", "projects", "file1", "file2"],
-  },
-  documents: {
-    name: "Documents",
-    type: "folder",
-    children: ["doc1", "doc2", "doc3"],
-  },
-  images: {
-    name: "Images",
-    type: "folder",
-    children: ["img1", "img2"],
-  },
-  projects: {
-    name: "Projects",
-    type: "folder",
-    children: ["project1", "project2"],
-  },
-  file1: {
-    name: "Quarterly Report.pdf",
-    type: "file",
-    fileType: "pdf",
-    size: "2.4 MB",
-    modified: "May 26, 2023",
-  },
-  file2: {
-    name: "Meeting Notes.docx",
-    type: "file",
-    fileType: "docx",
-    size: "1.2 MB",
-    modified: "Jun 12, 2023",
-  },
-  doc1: {
-    name: "Resume.pdf",
-    type: "file",
-    fileType: "pdf",
-    size: "1.8 MB",
-    modified: "Apr 15, 2023",
-  },
-  doc2: {
-    name: "Contract.docx",
-    type: "file",
-    fileType: "docx",
-    size: "3.5 MB",
-    modified: "May 3, 2023",
-  },
-  doc3: {
-    name: "Instructions.txt",
-    type: "file",
-    fileType: "txt",
-    size: "0.1 MB",
-    modified: "Jun 20, 2023",
-  },
-  img1: {
-    name: "Vacation.jpg",
-    type: "file",
-    fileType: "jpg",
-    size: "4.2 MB",
-    modified: "Jul 8, 2023",
-  },
-  img2: {
-    name: "Profile.png",
-    type: "file",
-    fileType: "png",
-    size: "1.5 MB",
-    modified: "Jul 10, 2023",
-  },
-  project1: {
-    name: "Website Redesign",
-    type: "folder",
-    children: ["website1", "website2"],
-  },
-  project2: {
-    name: "Mobile App",
-    type: "folder",
-    children: ["app1"],
-  },
-  website1: {
-    name: "Homepage Mockup.fig",
-    type: "file",
-    fileType: "fig",
-    size: "8.7 MB",
-    modified: "Jun 5, 2023",
-  },
-  website2: {
-    name: "Style Guide.pdf",
-    type: "file",
-    fileType: "pdf",
-    size: "2.1 MB",
-    modified: "Jun 8, 2023",
-  },
-  app1: {
-    name: "App Wireframes.sketch",
-    type: "file",
-    fileType: "sketch",
-    size: "5.3 MB",
-    modified: "May 22, 2023",
-  },
-}
 
 export default function DriveClone() {
-  const [currentFolder, setCurrentFolder] = useState("root")
-  const [viewMode, setViewMode] = useState("list")
-  const [breadcrumbs, setBreadcrumbs] = useState([{ id: "root", name: "My Drive" }])
+  const [currentFolder, setCurrentFolder] = useState("root");
+  const [viewMode, setViewMode] = useState("list");
+  const [breadcrumbs, setBreadcrumbs] = useState([
+    { id: "root", name: "My Drive" },
+  ]);
 
   // Get file icon based on file type
-  const getFileIcon = (fileType) => {
+  const getFileIcon = (fileType: string) => {
     switch (fileType) {
       case "pdf":
-        return <FileText className="h-5 w-5 text-red-500" />
+        return <FileText className="h-5 w-5 text-red-500" />;
       case "docx":
-        return <FileText className="h-5 w-5 text-blue-500" />
+        return <FileText className="h-5 w-5 text-blue-500" />;
       case "txt":
-        return <FileText className="h-5 w-5 text-gray-500" />
+        return <FileText className="h-5 w-5 text-gray-500" />;
       case "jpg":
       case "png":
-        return <ImageIcon className="h-5 w-5 text-green-500" />
+        return <ImageIcon className="h-5 w-5 text-green-500" />;
       case "fig":
-        return <File className="h-5 w-5 text-purple-500" />
+        return <File className="h-5 w-5 text-purple-500" />;
       case "sketch":
-        return <File className="h-5 w-5 text-orange-500" />
+        return <File className="h-5 w-5 text-orange-500" />;
       default:
-        return <File className="h-5 w-5 text-gray-500" />
+        return <File className="h-5 w-5 text-gray-500" />;
     }
-  }
+  };
 
   // Handle folder navigation
-  const navigateToFolder = (folderId, folderName) => {
-    setCurrentFolder(folderId)
+  const navigateToFolder = (folderId: string, folderName: string) => {
+    setCurrentFolder(folderId);
 
     // Update breadcrumbs
-    const existingIndex = breadcrumbs.findIndex((b) => b.id === folderId)
+    const existingIndex = breadcrumbs.findIndex((b) => b.id === folderId);
     if (existingIndex !== -1) {
-      setBreadcrumbs(breadcrumbs.slice(0, existingIndex + 1))
+      setBreadcrumbs(breadcrumbs.slice(0, existingIndex + 1));
     } else {
-      setBreadcrumbs([...breadcrumbs, { id: folderId, name: folderName }])
+      setBreadcrumbs([...breadcrumbs, { id: folderId, name: folderName }]);
     }
-  }
+  };
 
   // Get current folder contents
   const getCurrentFolderContents = () => {
-    const folder = mockData[currentFolder]
-    if (!folder || !folder.children) return []
+    if (currentFolder === "root") {
+      return mockData.filter((item) => item.parent === null);
+    }
+    return mockData.filter((item) => item.parent === currentFolder);
+  };
 
-    return folder.children.map((childId) => {
-      const item = mockData[childId]
-      return {
-        id: childId,
-        ...item,
-      }
-    })
-  }
-
-  const folderContents = getCurrentFolderContents()
+  const folderContents = getCurrentFolderContents();
 
   return (
-    <div className="flex h-screen flex-col bg-background text-foreground dark">
-      <header className="flex h-16 items-center border-b px-6 bg-background">
-        <div className="flex items-center gap-2 font-semibold text-xl text-blue-400">
+    <div className="bg-background text-foreground dark flex h-screen flex-col">
+      <header className="bg-background flex h-16 items-center border-b px-6">
+        <div className="flex items-center gap-2 text-xl font-semibold text-blue-400">
           <Folder className="h-6 w-6" />
           <span>GDrive Clone</span>
         </div>
-        <div className="ml-8 flex-1 max-w-xl">
+        <div className="ml-8 max-w-xl flex-1">
           <div className="relative">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Search className="text-muted-foreground absolute top-2.5 left-2.5 h-4 w-4" />
             <Input
               type="search"
               placeholder="Search in Drive"
-              className="w-full bg-muted pl-8 focus-visible:ring-blue-500"
+              className="bg-muted w-full pl-8 focus-visible:ring-blue-500"
             />
           </div>
         </div>
@@ -216,7 +122,7 @@ export default function DriveClone() {
         </div>
       </header>
       <div className="flex flex-1 overflow-hidden">
-        <aside className="w-64 border-r bg-muted/40">
+        <aside className="bg-muted/40 w-64 border-r">
           <div className="p-4">
             <Dialog>
               <DialogTrigger asChild>
@@ -230,10 +136,12 @@ export default function DriveClone() {
                   <DialogTitle>Upload files</DialogTitle>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
-                  <div className="border-2 border-dashed rounded-lg p-12 text-center">
-                    <Upload className="h-8 w-8 mx-auto mb-4 text-muted-foreground" />
-                    <p className="mb-2 text-sm font-medium">Drag and drop files here</p>
-                    <p className="text-xs text-muted-foreground mb-4">or</p>
+                  <div className="rounded-lg border-2 border-dashed p-12 text-center">
+                    <Upload className="text-muted-foreground mx-auto mb-4 h-8 w-8" />
+                    <p className="mb-2 text-sm font-medium">
+                      Drag and drop files here
+                    </p>
+                    <p className="text-muted-foreground mb-4 text-xs">or</p>
                     <Button size="sm">Browse files</Button>
                   </div>
                 </div>
@@ -263,11 +171,15 @@ export default function DriveClone() {
             </Button>
           </nav>
           <div className="mt-6 px-4">
-            <div className="text-sm font-medium text-muted-foreground">Storage</div>
-            <div className="mt-2 h-2 rounded-full bg-muted">
+            <div className="text-muted-foreground text-sm font-medium">
+              Storage
+            </div>
+            <div className="bg-muted mt-2 h-2 rounded-full">
               <div className="h-full w-2/3 rounded-full bg-blue-600" />
             </div>
-            <div className="mt-1 text-xs text-muted-foreground">6.5 GB of 15 GB used</div>
+            <div className="text-muted-foreground mt-1 text-xs">
+              6.5 GB of 15 GB used
+            </div>
           </div>
         </aside>
         <main className="flex-1 overflow-hidden">
@@ -275,7 +187,9 @@ export default function DriveClone() {
             <div className="flex items-center gap-2">
               {breadcrumbs.map((crumb, index) => (
                 <div key={crumb.id} className="flex items-center">
-                  {index > 0 && <ChevronRight className="h-4 w-4 text-muted-foreground mx-1" />}
+                  {index > 0 && (
+                    <ChevronRight className="text-muted-foreground mx-1 h-4 w-4" />
+                  )}
                   <Button
                     variant="ghost"
                     className="h-8 text-sm"
@@ -315,18 +229,30 @@ export default function DriveClone() {
                 </TabsList>
                 <TabsContent value="all" className="mt-0">
                   {viewMode === "grid" ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                       {folderContents.map((item) => (
-                        <div key={item.id} className="group relative rounded-lg border p-3 hover:bg-muted/50">
+                        <div
+                          key={item.id}
+                          className="group hover:bg-muted/50 relative rounded-lg border p-3"
+                        >
                           {item.type === "folder" ? (
-                            <div className="cursor-pointer" onClick={() => navigateToFolder(item.id, item.name)}>
+                            <div
+                              className="cursor-pointer"
+                              onClick={() =>
+                                navigateToFolder(item.id, item.name)
+                              }
+                            >
                               <Folder className="h-10 w-10 text-blue-500" />
-                              <div className="mt-2 truncate font-medium">{item.name}</div>
+                              <div className="mt-2 truncate font-medium">
+                                {item.name}
+                              </div>
                             </div>
                           ) : (
                             <Link href={`#file-${item.id}`} className="block">
-                              {getFileIcon(item.fileType)}
-                              <div className="mt-2 truncate font-medium">{item.name}</div>
+                              {getFileIcon(item.type)}
+                              <div className="mt-2 truncate font-medium">
+                                {item.name}
+                              </div>
                             </Link>
                           )}
                           <DropdownMenu>
@@ -334,7 +260,7 @@ export default function DriveClone() {
                               <Button
                                 variant="ghost"
                                 size="icon"
-                                className="absolute right-2 top-2 opacity-0 group-hover:opacity-100"
+                                className="absolute top-2 right-2 opacity-0 group-hover:opacity-100"
                               >
                                 <MoreVertical className="h-4 w-4" />
                               </Button>
@@ -343,7 +269,9 @@ export default function DriveClone() {
                               <DropdownMenuItem>Download</DropdownMenuItem>
                               <DropdownMenuItem>Rename</DropdownMenuItem>
                               <DropdownMenuItem>Move</DropdownMenuItem>
-                              <DropdownMenuItem className="text-red-500">Delete</DropdownMenuItem>
+                              <DropdownMenuItem className="text-red-500">
+                                Delete
+                              </DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
                         </div>
@@ -351,7 +279,7 @@ export default function DriveClone() {
                     </div>
                   ) : (
                     <div className="rounded-lg border">
-                      <div className="grid grid-cols-12 gap-4 p-3 font-medium text-muted-foreground">
+                      <div className="text-muted-foreground grid grid-cols-12 gap-4 p-3 font-medium">
                         <div className="col-span-5">Name</div>
                         <div className="col-span-2">Type</div>
                         <div className="col-span-2">Size</div>
@@ -359,35 +287,43 @@ export default function DriveClone() {
                         <div className="col-span-1"></div>
                       </div>
                       {folderContents.map((item) => (
-                        <div key={item.id} className="group grid grid-cols-12 gap-4 border-t p-3 hover:bg-muted/50">
+                        <div
+                          key={item.id}
+                          className="group hover:bg-muted/50 grid grid-cols-12 gap-4 border-t p-3"
+                        >
                           <div className="col-span-5 flex items-center gap-3">
                             {item.type === "folder" ? (
                               <>
-                                <Folder className="h-5 w-5 text-blue-500 shrink-0" />
+                                <Folder className="h-5 w-5 shrink-0 text-blue-500" />
                                 <button
                                   className="truncate font-medium"
-                                  onClick={() => navigateToFolder(item.id, item.name)}
+                                  onClick={() =>
+                                    navigateToFolder(item.id, item.name)
+                                  }
                                 >
                                   {item.name}
                                 </button>
                               </>
                             ) : (
                               <>
-                                {getFileIcon(item.fileType)}
-                                <Link href={`#file-${item.id}`} className="truncate font-medium">
+                                {getFileIcon(item.type)}
+                                <Link
+                                  href={`#file-${item.id}`}
+                                  className="truncate font-medium"
+                                >
                                   {item.name}
                                 </Link>
                               </>
                             )}
                           </div>
-                          <div className="col-span-2 flex items-center text-sm text-muted-foreground">
-                            {item.type === "folder" ? "Folder" : item.fileType?.toUpperCase() || "File"}
+                          <div className="text-muted-foreground col-span-2 flex items-center text-sm">
+                            {item.type === "folder"
+                              ? "Folder"
+                              : item.type?.toUpperCase() || "File"}
                           </div>
-                          <div className="col-span-2 flex items-center text-sm text-muted-foreground">
-                            {item.size || (item.type === "folder" ? "—" : "0 KB")}
-                          </div>
-                          <div className="col-span-2 flex items-center text-sm text-muted-foreground">
-                            {item.modified || "—"}
+                          <div className="text-muted-foreground col-span-2 flex items-center text-sm">
+                            {item.size ??
+                              (item.type === "folder" ? "—" : "0 KB")}
                           </div>
                           <div className="col-span-1 flex items-center justify-end">
                             <DropdownMenu>
@@ -401,10 +337,14 @@ export default function DriveClone() {
                                 </Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
-                                {item.type !== "folder" && <DropdownMenuItem>Download</DropdownMenuItem>}
+                                {item.type !== "folder" && (
+                                  <DropdownMenuItem>Download</DropdownMenuItem>
+                                )}
                                 <DropdownMenuItem>Rename</DropdownMenuItem>
                                 <DropdownMenuItem>Move</DropdownMenuItem>
-                                <DropdownMenuItem className="text-red-500">Delete</DropdownMenuItem>
+                                <DropdownMenuItem className="text-red-500">
+                                  Delete
+                                </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>
                           </div>
@@ -415,21 +355,31 @@ export default function DriveClone() {
                 </TabsContent>
                 <TabsContent value="folders" className="mt-0">
                   {viewMode === "grid" ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                       {folderContents
                         .filter((item) => item.type === "folder")
                         .map((item) => (
-                          <div key={item.id} className="group relative rounded-lg border p-3 hover:bg-muted/50">
-                            <div className="cursor-pointer" onClick={() => navigateToFolder(item.id, item.name)}>
+                          <div
+                            key={item.id}
+                            className="group hover:bg-muted/50 relative rounded-lg border p-3"
+                          >
+                            <div
+                              className="cursor-pointer"
+                              onClick={() =>
+                                navigateToFolder(item.id, item.name)
+                              }
+                            >
                               <Folder className="h-10 w-10 text-blue-500" />
-                              <div className="mt-2 truncate font-medium">{item.name}</div>
+                              <div className="mt-2 truncate font-medium">
+                                {item.name}
+                              </div>
                             </div>
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
                                 <Button
                                   variant="ghost"
                                   size="icon"
-                                  className="absolute right-2 top-2 opacity-0 group-hover:opacity-100"
+                                  className="absolute top-2 right-2 opacity-0 group-hover:opacity-100"
                                 >
                                   <MoreVertical className="h-4 w-4" />
                                 </Button>
@@ -437,7 +387,9 @@ export default function DriveClone() {
                               <DropdownMenuContent align="end">
                                 <DropdownMenuItem>Rename</DropdownMenuItem>
                                 <DropdownMenuItem>Move</DropdownMenuItem>
-                                <DropdownMenuItem className="text-red-500">Delete</DropdownMenuItem>
+                                <DropdownMenuItem className="text-red-500">
+                                  Delete
+                                </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>
                           </div>
@@ -445,7 +397,7 @@ export default function DriveClone() {
                     </div>
                   ) : (
                     <div className="rounded-lg border">
-                      <div className="grid grid-cols-12 gap-4 p-3 font-medium text-muted-foreground">
+                      <div className="text-muted-foreground grid grid-cols-12 gap-4 p-3 font-medium">
                         <div className="col-span-5">Name</div>
                         <div className="col-span-2">Type</div>
                         <div className="col-span-2">Size</div>
@@ -455,20 +407,26 @@ export default function DriveClone() {
                       {folderContents
                         .filter((item) => item.type === "folder")
                         .map((item) => (
-                          <div key={item.id} className="group grid grid-cols-12 gap-4 border-t p-3 hover:bg-muted/50">
+                          <div
+                            key={item.id}
+                            className="group hover:bg-muted/50 grid grid-cols-12 gap-4 border-t p-3"
+                          >
                             <div className="col-span-5 flex items-center gap-3">
-                              <Folder className="h-5 w-5 text-blue-500 shrink-0" />
+                              <Folder className="h-5 w-5 shrink-0 text-blue-500" />
                               <button
                                 className="truncate font-medium"
-                                onClick={() => navigateToFolder(item.id, item.name)}
+                                onClick={() =>
+                                  navigateToFolder(item.id, item.name)
+                                }
                               >
                                 {item.name}
                               </button>
                             </div>
-                            <div className="col-span-2 flex items-center text-sm text-muted-foreground">Folder</div>
-                            <div className="col-span-2 flex items-center text-sm text-muted-foreground">—</div>
-                            <div className="col-span-2 flex items-center text-sm text-muted-foreground">
-                              {item.modified || "—"}
+                            <div className="text-muted-foreground col-span-2 flex items-center text-sm">
+                              Folder
+                            </div>
+                            <div className="text-muted-foreground col-span-2 flex items-center text-sm">
+                              —
                             </div>
                             <div className="col-span-1 flex items-center justify-end">
                               <DropdownMenu>
@@ -484,7 +442,9 @@ export default function DriveClone() {
                                 <DropdownMenuContent align="end">
                                   <DropdownMenuItem>Rename</DropdownMenuItem>
                                   <DropdownMenuItem>Move</DropdownMenuItem>
-                                  <DropdownMenuItem className="text-red-500">Delete</DropdownMenuItem>
+                                  <DropdownMenuItem className="text-red-500">
+                                    Delete
+                                  </DropdownMenuItem>
                                 </DropdownMenuContent>
                               </DropdownMenu>
                             </div>
@@ -495,21 +455,26 @@ export default function DriveClone() {
                 </TabsContent>
                 <TabsContent value="files" className="mt-0">
                   {viewMode === "grid" ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                       {folderContents
                         .filter((item) => item.type === "file")
                         .map((item) => (
-                          <div key={item.id} className="group relative rounded-lg border p-3 hover:bg-muted/50">
+                          <div
+                            key={item.id}
+                            className="group hover:bg-muted/50 relative rounded-lg border p-3"
+                          >
                             <Link href={`#file-${item.id}`} className="block">
-                              {getFileIcon(item.fileType)}
-                              <div className="mt-2 truncate font-medium">{item.name}</div>
+                              {getFileIcon(item.type)}
+                              <div className="mt-2 truncate font-medium">
+                                {item.name}
+                              </div>
                             </Link>
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
                                 <Button
                                   variant="ghost"
                                   size="icon"
-                                  className="absolute right-2 top-2 opacity-0 group-hover:opacity-100"
+                                  className="absolute top-2 right-2 opacity-0 group-hover:opacity-100"
                                 >
                                   <MoreVertical className="h-4 w-4" />
                                 </Button>
@@ -518,7 +483,9 @@ export default function DriveClone() {
                                 <DropdownMenuItem>Download</DropdownMenuItem>
                                 <DropdownMenuItem>Rename</DropdownMenuItem>
                                 <DropdownMenuItem>Move</DropdownMenuItem>
-                                <DropdownMenuItem className="text-red-500">Delete</DropdownMenuItem>
+                                <DropdownMenuItem className="text-red-500">
+                                  Delete
+                                </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>
                           </div>
@@ -526,7 +493,7 @@ export default function DriveClone() {
                     </div>
                   ) : (
                     <div className="rounded-lg border">
-                      <div className="grid grid-cols-12 gap-4 p-3 font-medium text-muted-foreground">
+                      <div className="text-muted-foreground grid grid-cols-12 gap-4 p-3 font-medium">
                         <div className="col-span-5">Name</div>
                         <div className="col-span-2">Type</div>
                         <div className="col-span-2">Size</div>
@@ -534,23 +501,26 @@ export default function DriveClone() {
                         <div className="col-span-1"></div>
                       </div>
                       {folderContents
-                        .filter((item) => item.type === "file")
-                        .map((item) => (
-                          <div key={item.id} className="group grid grid-cols-12 gap-4 border-t p-3 hover:bg-muted/50">
+                        .filter((item: DriveItem) => item.type === "file")
+                        .map((item: DriveItem) => (
+                          <div
+                            key={item.id}
+                            className="group hover:bg-muted/50 grid grid-cols-12 gap-4 border-t p-3"
+                          >
                             <div className="col-span-5 flex items-center gap-3">
-                              {getFileIcon(item.fileType)}
-                              <Link href={`#file-${item.id}`} className="truncate font-medium">
+                              {getFileIcon(item.type)}
+                              <Link
+                                href={`#file-${item.id}`}
+                                className="truncate font-medium"
+                              >
                                 {item.name}
                               </Link>
                             </div>
-                            <div className="col-span-2 flex items-center text-sm text-muted-foreground">
-                              {item.fileType?.toUpperCase() || "File"}
+                            <div className="text-muted-foreground col-span-2 flex items-center text-sm">
+                              {item.type?.toUpperCase() ?? "File"}
                             </div>
-                            <div className="col-span-2 flex items-center text-sm text-muted-foreground">
-                              {item.size || "0 KB"}
-                            </div>
-                            <div className="col-span-2 flex items-center text-sm text-muted-foreground">
-                              {item.modified || "—"}
+                            <div className="text-muted-foreground col-span-2 flex items-center text-sm">
+                              {item.size ?? "0 KB"}
                             </div>
                             <div className="col-span-1 flex items-center justify-end">
                               <DropdownMenu>
@@ -567,7 +537,9 @@ export default function DriveClone() {
                                   <DropdownMenuItem>Download</DropdownMenuItem>
                                   <DropdownMenuItem>Rename</DropdownMenuItem>
                                   <DropdownMenuItem>Move</DropdownMenuItem>
-                                  <DropdownMenuItem className="text-red-500">Delete</DropdownMenuItem>
+                                  <DropdownMenuItem className="text-red-500">
+                                    Delete
+                                  </DropdownMenuItem>
                                 </DropdownMenuContent>
                               </DropdownMenu>
                             </div>
@@ -582,5 +554,5 @@ export default function DriveClone() {
         </main>
       </div>
     </div>
-  )
+  );
 }
